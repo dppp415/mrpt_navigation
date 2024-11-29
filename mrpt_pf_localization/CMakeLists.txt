@@ -1,6 +1,8 @@
 cmake_minimum_required(VERSION 3.8)
 project(mrpt_pf_localization)
 
+set(CMAKE_POSITION_INDEPENDENT_CODE ON)
+
 # find dependencies
 find_package(ament_cmake REQUIRED)
 
@@ -15,6 +17,8 @@ find_package(sensor_msgs REQUIRED)
 find_package(tf2_geometry_msgs REQUIRED)
 find_package(mp2p_icp_map REQUIRED)
 find_package(mp2p_icp_filters REQUIRED)
+find_package(rclcpp REQUIRED)
+find_package(rclcpp_components REQUIRED)
 find_package(mola_relocalization) # OPTIONAL
 
 find_package(mrpt-ros2bridge REQUIRED)
@@ -49,7 +53,8 @@ add_library(${PROJECT_NAME}_core
 
 target_include_directories(${PROJECT_NAME}_core
     PUBLIC
-    include
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/>  
+    $<INSTALL_INTERFACE:include/>
 )
 
 target_link_libraries(${PROJECT_NAME}_core
@@ -98,23 +103,66 @@ target_link_libraries(${PROJECT_NAME}_node
   mrpt::ros2bridge
 )
 
+#######################
+# ROS composable node #
+#######################
+
+add_library(${PROJECT_NAME}_component SHARED
+    src/${PROJECT_NAME}_component.cpp
+    include/${PROJECT_NAME}_node.h
+)
+
+ament_target_dependencies(${PROJECT_NAME}_component
+    rclcpp
+    rclcpp_components
+    geometry_msgs
+    mrpt_msgs
+    mrpt_msgs_bridge
+    nav_msgs
+    pose_cov_ops
+    sensor_msgs
+    tf2
+    tf2_geometry_msgs
+)
+
+target_include_directories(${PROJECT_NAME}_component
+    PRIVATE
+    include
+)
+
+## Specify libraries to link a library or executable target against
+target_link_libraries(${PROJECT_NAME}_component
+  ${PROJECT_NAME}_core
+  mrpt::gui
+  mrpt::slam
+  mrpt::ros2bridge
+)
+
+rclcpp_components_register_node(
+    ${PROJECT_NAME}_component
+    PLUGIN "PFLocalizationNode"
+    EXECUTABLE ${PROJECT_NAME}_composable
+)
+
+ament_export_targets(export_${PROJECT_NAME})
+
 #############
 ## Install ##
 #############
 
-install(
-  TARGETS
-    ${PROJECT_NAME}_core
-    ${PROJECT_NAME}_node
-  DESTINATION
-    lib/${PROJECT_NAME}
+install(TARGETS ${PROJECT_NAME}_component ${PROJECT_NAME}_core ${PROJECT_NAME}_node
+        EXPORT export_${PROJECT_NAME}
+        ARCHIVE DESTINATION lib
+        LIBRARY DESTINATION lib
+        RUNTIME DESTINATION bin
+        DESTINATION
+          lib/${PROJECT_NAME}
 )
 
 install(
   DIRECTORY launch params
   DESTINATION share/${PROJECT_NAME}
 )
-
 
 ament_export_dependencies()
 
