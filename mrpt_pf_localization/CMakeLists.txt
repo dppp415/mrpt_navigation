@@ -74,12 +74,13 @@ endif()
 
 # ROS node:
 add_executable(${PROJECT_NAME}_node
-    src/${PROJECT_NAME}_node.cpp
+    src/main.cpp
     include/${PROJECT_NAME}_node.h
 )
 
 ament_target_dependencies(${PROJECT_NAME}_node
     rclcpp
+    rclcpp_components
     geometry_msgs
     mrpt_msgs
     mrpt_msgs_bridge
