@@ -43,7 +43,7 @@ find_package(mp2p_icp_filters REQUIRED)
 
 add_executable(${PROJECT_NAME}_node
               src/main.cpp
-              include/mrpt_pointcloud_pipeline/mrpt_pointcloud_pipeline_node.h)
+              include/${PROJECT_NAME}/mrpt_pointcloud_pipeline_node.h)
 
 target_include_directories(${PROJECT_NAME}_node
                            PUBLIC
