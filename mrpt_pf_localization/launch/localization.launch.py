@@ -88,6 +88,11 @@ def generate_launch_description():
         description="Whether to show a custom UI with details on the PF status"
     )
 
+    container_name_arg = DeclareLaunchArgument(
+        'container_name',
+        default_value='',
+    )
+
     pf_localization_node = Node(
         condition=UnlessCondition(use_composable),
         package='mrpt_pf_localization',
@@ -113,7 +118,7 @@ def generate_launch_description():
 
     composable_pf_localization_node = LoadComposableNodes(
         condition=IfCondition(use_composable),
-        target_container='lidar_container',
+        target_container=LaunchConfiguration('container_name'),
         composable_node_descriptions=[
             ComposableNode(
                 package='mrpt_pf_localization',
@@ -137,6 +142,7 @@ def generate_launch_description():
     )
 
     ld = LaunchDescription([
+        container_name_arg,
         pf_log_level_launch_arg,
         pf_log_level_core_launch_arg,
         relocalization_params_file_launch_arg,

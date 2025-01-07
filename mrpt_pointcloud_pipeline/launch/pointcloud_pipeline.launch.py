@@ -76,6 +76,11 @@ def generate_launch_description():
         description="Logging level"
     )
 
+    container_name_arg = DeclareLaunchArgument(
+        'container_name',
+        default_value='',
+    )
+
     emit_shutdown_action = Shutdown(reason='launch is shutting down')
 
     mrpt_pointcloud_pipeline_node = Node(
@@ -108,7 +113,7 @@ def generate_launch_description():
 
     composable_mrpt_pointcloud_pipeline = LoadComposableNodes(
         condition=IfCondition(use_composable),
-        target_container='lidar_container',
+        target_container=LaunchConfiguration('container_name'),
         composable_node_descriptions=[
             ComposableNode(
                 package='mrpt_pointcloud_pipeline',
@@ -131,6 +136,7 @@ def generate_launch_description():
     )
 
     ld = LaunchDescription([
+        container_name_arg,
         lidar_topic_name_arg,
         points_topic_name_arg,
         show_gui_arg,
