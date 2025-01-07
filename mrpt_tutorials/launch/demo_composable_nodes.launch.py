@@ -63,7 +63,7 @@ def generate_launch_description():
             get_package_share_directory('mrpt_pointcloud_pipeline'), 'launch',
             'pointcloud_pipeline.launch.py')]),
         launch_arguments={
-            # Change container_name argument as you need
+            #
             'use_composable': LaunchConfiguration('use_composable'),
             'container_name': 'demo_composable_container',
             #
@@ -84,7 +84,7 @@ def generate_launch_description():
             get_package_share_directory('mrpt_pf_localization'), 'launch',
             'localization.launch.py')]),
         launch_arguments={
-            # Change container_name argument as you need
+            #
             'use_composable': LaunchConfiguration('use_composable'),
             'container_name': 'demo_composable_container',
             #
