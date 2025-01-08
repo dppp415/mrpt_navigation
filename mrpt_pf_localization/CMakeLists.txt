@@ -1,8 +1,6 @@
 cmake_minimum_required(VERSION 3.8)
 project(mrpt_pf_localization)
 
-set(CMAKE_POSITION_INDEPENDENT_CODE ON)
-
 # find dependencies
 find_package(ament_cmake REQUIRED)
 
@@ -46,7 +44,7 @@ message(STATUS "mola_relocalization_FOUND: ${mola_relocalization_FOUND}")
 ###########
 
 # non-ROS C++ library:
-add_library(${PROJECT_NAME}_core
+add_library(${PROJECT_NAME}_core SHARED
     src/${PROJECT_NAME}/${PROJECT_NAME}_core.cpp
     include/${PROJECT_NAME}/${PROJECT_NAME}_core.h
 )
